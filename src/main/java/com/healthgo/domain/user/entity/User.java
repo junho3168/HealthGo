@@ -9,9 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import lombok.Getter;
 
+@Getter
 @Entity
 public class User {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -26,9 +29,21 @@ public class User {
 	private String nickname;
 
 	private String profileImageUrl;
-
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+
+	protected User() {} // JPA 기본 생성자 (protected)
+
+	private User(String email, String password, String nickname, String profileImageUrl) {
+		this.email = email;
+		this.password = password;
+		this.nickname = nickname;
+		this.profileImageUrl = profileImageUrl;
+	}
+
+	public static User create(String email, String password, String nickname) {
+		return new User(email, password, nickname, null);
+	}
 
 	@PrePersist
 	protected void onCreate() {

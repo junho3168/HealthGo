@@ -1,0 +1,45 @@
+package com.healthgo.domain.user.service;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.healthgo.domain.user.dto.req.SignupRequest;
+import com.healthgo.domain.user.dto.res.SignupResponse;
+import com.healthgo.domain.user.entity.User;
+import com.healthgo.domain.user.repository.UserRepository;
+
+@Service
+public class UserService {
+
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+
+	public UserService(UserRepository userRepository,
+		PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	@Transactional
+	public SignupResponse signup(SignupRequest request) {
+		if (userRepository.existsByEmail(request.email())) {
+			throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+		}
+		if (userRepository.existsByNickname(request.nickname())) {
+			throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+		}
+
+		String encodedPassword = passwordEncoder.encode(request.password());
+
+		User user = User.create(
+			request.email(),
+			encodedPassword,
+			request.nickname()
+		);
+
+		User savedUser = userRepository.save(user);
+
+		return new SignupResponse(savedUser.getId(), "회원가입 성공");
+	}
+}
