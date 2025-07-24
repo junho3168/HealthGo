@@ -41,10 +41,13 @@ public class UserController {
 	}
 
 	@PutMapping
-	public ResponseEntity<String> updateUserInfo(
+	public ResponseEntity<UserInfoResponse> updateUserInfo(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestBody UpdateUserRequest request) {
-		userService.updateUser(userDetails.getUsername(), request);
-		return ResponseEntity.ok("회원 정보가 수정되었습니다.");
+
+		User updatedUser = userService.updateUser(userDetails.getUsername(), request);
+		UserInfoResponse response = new UserInfoResponse(updatedUser);
+
+		return ResponseEntity.ok(response);
 	}
 }

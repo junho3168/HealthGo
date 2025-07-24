@@ -51,24 +51,12 @@ public class UserService {
 	}
 
 	@Transactional
-	public void updateUser(String currentEmail, UpdateUserRequest request) {
-		User user = userRepository.findByEmail(currentEmail)
-			.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+	public User updateUser(String email, UpdateUserRequest request) {
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-		// 이메일 중복 체크 (변경 시)
-		if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
-			if (userRepository.existsByEmail(request.getEmail())) {
-				throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
-			}
-			user.updateEmail(request.getEmail());
-		}
+		user.update(request.getEmail(), request.getNickname());  // User에 update 메서드가 있어야 함
 
-		// 닉네임 중복 체크 (변경 시)
-		if (request.getNickname() != null && !request.getNickname().equals(user.getNickname())) {
-			if (userRepository.existsByNickname(request.getNickname())) {
-				throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
-			}
-			user.updateNickname(request.getNickname());
-		}
+		return userRepository.save(user);
 	}
 }

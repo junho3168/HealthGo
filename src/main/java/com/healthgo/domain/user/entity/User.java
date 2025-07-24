@@ -45,12 +45,8 @@ public class User {
 		return new User(email, password, nickname, null);
 	}
 
-	public void updateEmail(String email) {
+	public void update(String email, String nickname) {
 		this.email = email;
-	}
-
-	// 닉네임 변경 메서드
-	public void updateNickname(String nickname) {
 		this.nickname = nickname;
 	}
 
