@@ -45,6 +45,15 @@ public class User {
 		return new User(email, password, nickname, null);
 	}
 
+	public void updateEmail(String email) {
+		this.email = email;
+	}
+
+	// 닉네임 변경 메서드
+	public void updateNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
 	@PrePersist
 	protected void onCreate() {
 		this.createdAt = LocalDateTime.now();

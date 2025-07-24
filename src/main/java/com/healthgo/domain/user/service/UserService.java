@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.healthgo.domain.user.dto.req.SignupRequest;
+import com.healthgo.domain.user.dto.req.UpdateUserRequest;
 import com.healthgo.domain.user.dto.res.SignupResponse;
 import com.healthgo.domain.user.entity.User;
 import com.healthgo.domain.user.repository.UserRepository;
@@ -47,5 +48,27 @@ public class UserService {
 	public User findByEmail(String email) {
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+	}
+
+	@Transactional
+	public void updateUser(String currentEmail, UpdateUserRequest request) {
+		User user = userRepository.findByEmail(currentEmail)
+			.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+		// 이메일 중복 체크 (변경 시)
+		if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
+			if (userRepository.existsByEmail(request.getEmail())) {
+				throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+			}
+			user.updateEmail(request.getEmail());
+		}
+
+		// 닉네임 중복 체크 (변경 시)
+		if (request.getNickname() != null && !request.getNickname().equals(user.getNickname())) {
+			if (userRepository.existsByNickname(request.getNickname())) {
+				throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+			}
+			user.updateNickname(request.getNickname());
+		}
 	}
 }
