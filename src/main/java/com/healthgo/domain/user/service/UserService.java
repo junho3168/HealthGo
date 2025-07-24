@@ -1,5 +1,6 @@
 package com.healthgo.domain.user.service;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,5 +42,10 @@ public class UserService {
 		User savedUser = userRepository.save(user);
 
 		return new SignupResponse(savedUser.getId(), "회원가입 성공");
+	}
+
+	public User findByEmail(String email) {
+		return userRepository.findByEmail(email)
+			.orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 	}
 }
